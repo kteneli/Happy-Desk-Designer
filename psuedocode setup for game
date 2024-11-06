@@ -1,0 +1,69 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Nov  5 21:35:49 2024
+
+@author: kirst
+"""
+
+## Set up environment
+import pygame
+import pyaudio
+import sys
+
+# initialize pygame
+pygame.init()
+
+# Set up display
+size = (1000,800)
+screen = pygame.display.set_mode(size)
+pygame.display.set_caption("Happy Desk Designer")
+
+# Define colors here
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+LIGHTBLUE = (153,204,255)
+LAVENDER = (232, 212, 246)
+PINK = (231,155,214)
+INDIGO = (153,153,255)
+DEEPBLUE = (0,51,102)
+DARKBLUE = (0,0,102)
+DARKGREEN = (51,102,0)
+LEMONBLUE = (0,102,204)
+DEEPGREEN = (0,102,51)
+CAMOGREEN = (0,102,0)
+LIGHTBROWN = (182,139,64)
+TAN = (165,126,59)
+CREAM = (236,218,186)
+DIRTRED = (159,61,61)
+GREY = (224,224,224)
+LIGHTYELLOW = (255,255,204)
+TEAL = (204,255,255)
+SKYBLUE = (204,229,255)
+LIGHTORANGE = (255,229,204)
+CHOCOLATE = (85,55,24)
+DARKBROWN = (74,42,11)
+
+# Define font styles
+font = pygame.font.SysFont("Roboto", 48)
+
+# Define graphics here
+
+# Initialize game state
+current_screen = 'loading' # pay attention to which screen user is on
+
+# Define functioning buttons
+
+
+
+## MAIN PROGRAM LOOP
+
+
+
+# Define loading screen 
+
+# Call main
+
+# End program
