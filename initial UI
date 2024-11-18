@@ -1,0 +1,165 @@
+"""
+Created on Mon Nov 18 01:41:33 2024
+
+@author: kirst
+"""
+
+import pygame
+import sys
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+size = (1540, 790)
+screen = pygame.display.set_mode(size)
+pygame.display.set_caption("Happy Desk Designer")
+
+# Colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+LIGHTBROWN = (182, 139, 64)
+TAN = (165, 126, 59)
+CREAM = (236, 218, 186)
+SOFTPINK = (236, 200, 224)
+LIGHTYELLOW = (255, 255, 204)
+GREY = (224, 224, 224)
+SOFTRED = (255, 230, 230)
+MINTGREEN = (230, 255, 230)
+PASTELBLUE = (230, 230, 255)
+SOFTYELLOW = (255, 255, 230)
+SOFTORANGE = (255, 245, 230)
+LAVENDER = (245, 230, 255)
+
+# Fonts
+title_font = pygame.font.SysFont("Roboto", 64, bold=True)
+font = pygame.font.SysFont("Roboto", 48)
+small_font = pygame.font.SysFont("Roboto", 32)
+
+# Professors and their associated colors
+professors = {
+    "Pendar Mahmoudi": {"circle_color": (255, 0, 0), "background_color": SOFTRED},  # Red
+    "Milad Kamkar": {"circle_color": (0, 255, 0), "background_color": MINTGREEN},  # Green
+    "Michael Tam": {"circle_color": (0, 0, 255), "background_color": PASTELBLUE},  # Blue
+    "Zino Ojogbo": {"circle_color": (255, 255, 0), "background_color": SOFTYELLOW},  # Yellow
+    "Jordan Hamilton": {"circle_color": (255, 165, 0), "background_color": SOFTORANGE},  # Orange
+    "Matheus Azevedo": {"circle_color": (128, 0, 128), "background_color": LAVENDER}  # Purple
+}
+
+# Game states
+current_screen = "menu"
+character_index = 0
+selected_professor = None
+
+# Button dimensions
+button_width, button_height = 240, 60
+button_start = pygame.Rect(size[0] // 2 - button_width // 2, 250, button_width, button_height)
+button_rules = pygame.Rect(size[0] // 2 - button_width // 2, 330, button_width, button_height)
+button_quit = pygame.Rect(size[0] // 2 - button_width // 2, 410, button_width, button_height)
+button_left_arrow = pygame.Rect(100, size[1] // 2, 60, 60)
+button_right_arrow = pygame.Rect(size[0] - 160, size[1] // 2, 60, 60)
+button_select = pygame.Rect(size[0] // 2 - button_width // 2, size[1] - 200, button_width, button_height)
+button_back = pygame.Rect(50, size[1] - 100, button_width, button_height)
+
+# Helper functions
+def draw_text(text, x, y, color=BLACK, font_type=font, centered=False):
+    """Helper function to draw text on the screen."""
+    text_surface = font_type.render(text, True, color)
+    text_rect = text_surface.get_rect(center=(x, y)) if centered else (x, y)
+    screen.blit(text_surface, text_rect)
+
+def draw_button(rect, text, color=LIGHTYELLOW, border_radius=15, font_type=font):
+    """Draws a button with rounded corners and centered text."""
+    pygame.draw.rect(screen, color, rect, border_radius=border_radius)
+    draw_text(text, rect.centerx, rect.centery, centered=True, font_type=font_type)
+
+def draw_prof(professor, x, y, radius=100, custom_text=None):
+    """Draw a personalized circle for a professor."""
+    circle_color = professors[professor]["circle_color"]
+    pygame.draw.circle(screen, circle_color, (x, y), radius)
+    text = custom_text if custom_text else professor
+    draw_text(text, x, y + radius + 20, centered=True, font_type=small_font)
+
+# Screens
+def display_main_menu():
+    """Render the main menu."""
+    screen.fill(CREAM)
+    draw_text("Happy Desk Designer", size[0] // 2, 120, centered=True, font_type=title_font)
+    draw_button(button_start, "Start Game")
+    draw_button(button_rules, "Rules")
+    draw_button(button_quit, "Quit")
+
+def display_rules():
+    """Render the rules screen."""
+    screen.fill(SOFTPINK)
+    draw_text("Rules", size[0] // 2, 100, centered=True, font_type=title_font)
+    rules = [
+        "1. Select your favorite professor to decorate their desk!",
+        "2. Drag and drop items to personalize the desk.",
+        "3. Be creative and have fun!",
+    ]
+    y_offset = 200
+    for rule in rules:
+        draw_text(rule, size[0] // 2, y_offset, centered=True, font_type=small_font)
+        y_offset += 60
+    draw_button(button_back, "Back", GREY)
+
+def display_character_select():
+    """Render the character selection screen."""
+    global character_index
+    professor = list(professors.keys())[character_index]
+    background_color = professors[professor]["background_color"]
+    screen.fill(background_color)
+    draw_text("Select Your Professor", size[0] // 2, 100, centered=True, font_type=title_font)
+    draw_button(button_left_arrow, "<")
+    draw_button(button_right_arrow, ">")
+    draw_button(button_select, "Select")
+    draw_button(button_back, "Back", GREY)
+    draw_prof(professor, size[0] // 2, size[1] // 2)
+
+def display_game_screen(professor):
+    """Render the game screen for the selected professor."""
+    screen.fill(WHITE)
+    draw_text(f"Game Screen for {professor}", size[0] // 2, size[1] // 2, centered=True)
+
+# Game loop
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            mouse_pos = pygame.mouse.get_pos()
+            if current_screen == "menu":
+                if button_start.collidepoint(mouse_pos):
+                    current_screen = "character_select"
+                elif button_rules.collidepoint(mouse_pos):
+                    current_screen = "rules"
+                elif button_quit.collidepoint(mouse_pos):
+                    running = False
+            elif current_screen == "character_select":
+                if button_left_arrow.collidepoint(mouse_pos):
+                    character_index = (character_index - 1) % len(professors)
+                elif button_right_arrow.collidepoint(mouse_pos):
+                    character_index = (character_index + 1) % len(professors)
+                elif button_select.collidepoint(mouse_pos):
+                    selected_professor = list(professors.keys())[character_index]
+                    current_screen = "game"
+                elif button_back.collidepoint(mouse_pos):
+                    current_screen = "menu"
+            elif current_screen == "rules" and button_back.collidepoint(mouse_pos):
+                current_screen = "menu"
+
+    if current_screen == "menu":
+        display_main_menu()
+    elif current_screen == "character_select":
+        display_character_select()
+    elif current_screen == "rules":
+        display_rules()
+    elif current_screen == "game":
+        display_game_screen(selected_professor)
+
+    pygame.display.flip()
+
+pygame.quit()
+sys.exit()
